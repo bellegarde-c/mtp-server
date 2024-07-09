@@ -46,6 +46,9 @@ fi
 
 . $CONFIG_FILE
 
+# First argument overrides the USBMODE
+[ -z "${1}" ] || USBMODE="${1}"
+
 if [ "$USBMODE" = "mtp" ]; then
     if [ "$METHOD" = "configfs" ]; then
         if [ ! -e "$GADGETDIR/functions/$MTPCONFIG" ]; then

@@ -1,12 +1,12 @@
 [Unit]
-Description=manage state changes between rndis and mtp
+Description=usb state change: to %i
 Requires=lxc@android.service
 After=phosh.service
 
 [Service]
 Type=oneshot
 ExecStartPre=-chown droidian:droidian /dev/mtp_usb
-ExecStart=/usr/sbin/mtp-configfs
+ExecStart=/usr/sbin/mtp-configfs %i
 
 [Install]
 WantedBy=graphical.target
