@@ -4,6 +4,7 @@ Requires=lxc@android.service
 After=phosh.service
 
 [Service]
+Type=oneshot
 ExecStartPre=-chown droidian:droidian /dev/mtp_usb
 ExecStart=/usr/sbin/mtp-configfs
 
