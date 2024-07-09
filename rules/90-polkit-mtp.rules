@@ -1,0 +1,7 @@
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.systemd1.manage-units" && subject.active && subject.local == true) {
+        if (action.lookup("unit").match("mtp-configfs")) {
+            return polkit.Result.YES;
+        }
+    }
+});
