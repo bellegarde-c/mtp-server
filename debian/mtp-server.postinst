@@ -1,0 +1,49 @@
+#!/bin/sh
+
+#DEBHELPER#
+
+configure() {
+	# Ensure configuration files are owned and writable by root.
+	# This was not the case previously
+	for file in /usr/lib/droidian/device/mtp-configfs.conf /etc/mtp-configfs.conf; do
+		if [ -e ${file} ]; then
+			chown root:root ${file}
+			chmod 644 ${file}
+		fi
+	done
+
+	# Migrate to the new multi-instance service
+	if [ ! -e /var/lib/droidian/mtp-configfs-instance-migration-done ]; then
+		USBMODE=$(grep USBMODE= /usr/lib/droidian/device/mtp-configfs.conf /etc/mtp-configfs.conf 2>/dev/null | cut -d'=' -f2 | sed -e "s|\"||g" -e "s|'||g" | head -n 1)
+		case "${USBMODE}" in
+			rndis|mtp)
+				deb-systemd-helper enable mtp-configfs@${USBMODE}
+				;;
+			none)
+				# Nothing to do
+				;;
+			*)
+				echo "mtp-configfs migration: wrong USBMODE ${USBMODE}" >&2
+				;;
+		esac
+
+		touch /var/lib/droidian/mtp-configfs-instance-migration-done
+	fi
+}
+
+case "${1}" in
+	configure)
+		configure
+		;;
+
+	abort-upgrade|abort-remove|abort-deconfigure)
+		;;
+
+	*)
+		echo "postinst called with unknown argument $1" >&2
+		exit 1
+	;;
+esac
+
+
+exit 0
