@@ -6,6 +6,10 @@ After=phosh.service
 [Service]
 Type=oneshot
 ExecStartPre=-chown droidian:droidian /dev/mtp_usb
+ExecStartPre=-rm -f /etc/systemd/system/graphical.target.wants/mtp-configfs@none.service
+ExecStartPre=-rm -f /etc/systemd/system/graphical.target.wants/mtp-configfs@mtp.service
+ExecStartPre=-rm -f /etc/systemd/system/graphical.target.wants/mtp-configfs@rndis.service
+ExecStartPre=-ln -sf /usr/lib/systemd/system/mtp-configfs@.service /etc/systemd/system/graphical.target.wants/mtp-configfs@%i.service
 ExecStart=/usr/sbin/mtp-configfs %i
 
 [Install]
