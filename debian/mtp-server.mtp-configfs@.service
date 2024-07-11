@@ -1,7 +1,7 @@
 [Unit]
 Description=usb state change: to %i
 Requires=lxc@android.service
-After=phosh.service
+After=android_boot_completed.service
 
 [Service]
 Type=oneshot
