@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 CONFIGFS=/sys/kernel/config
 ANDROID_USB=/sys/class/android_usb/android0
@@ -44,7 +44,21 @@ if [ "$METHOD" = "configfs" ]; then
     rm -rf $GADGETDIR/configs/$CONFIGNAME 2> /dev/null
 fi
 
-. $CONFIG_FILE
+while read line; do
+    if ! [[ $line == *=* ]]; then
+        continue
+    fi
+    declare \
+        $(echo "$line" | cut -d= -f1)=$(
+            echo "$line" | \
+            cut -d= -f2- | \
+            sed -e "s|\$CONFIGFS|$CONFIGFS|g" \
+                -e "s|\${CONFIGFS}|$CONFIGFS|g" \
+                -e "s|\$CONFIGDIR|$CONFIGDIR|g" \
+                -e "s|\${CONFIGDIR}|$CONFIGDIR|g" \
+                -e "s|\"||g" \
+                -e "s|'||g")
+done < $CONFIG_FILE
 
 # First argument overrides the USBMODE
 [ -z "${1}" ] || USBMODE="${1}"
